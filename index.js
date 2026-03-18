@@ -1,14 +1,35 @@
 const { isNull, isBoolean, isNumber, isString, isArray, isObject, isEmpty, fromPairs, keys, map, repeat } = require('lodash')
 const { parse: parseLua } = require('luaparse')
 
-const formatLuaString = (string, singleQuote) => (singleQuote ? `'${string.replace(/'/g, "\\'")}'` : `"${string.replace(/"/g, '\\"')}"`)
+const formatLuaString = (string, singleQuote) => (
+  singleQuote ? `'${string.replace(/'/g, "\\'")}'` : `"${string.replace(/"/g, '\\"')}"`
+)
 
-// 修复点1：补充 "nil" 到 valueKeys 映射（键是字符串"nil"，值是Lua的nil关键字）
-const valueKeys = { false: 'false', true: 'true', null: 'nil', nil: 'nil' }
+// 仅用于将 JS 特殊值映射到 Lua 关键字
+const valueKeys = { false: 'false', true: 'true', null: 'nil' }
 
-// 修复点2：formatLuaKey 逻辑不变，但因 valueKeys 新增 nil，会自动处理 "nil" 键
-const formatLuaKey = (string, singleQuote) =>
-  valueKeys[string] ? `[${valueKeys[string]}]` : string.match(/^[a-zA-Z_][a-zA-Z_0-9]*$/) ? string : `[${formatLuaString(string, singleQuote)}]`
+// Lua 保留关键字列表
+const luaKeywords = new Set([
+  'and', 'break', 'do', 'else', 'elseif', 'end', 'false', 'for', 'function', 'goto', 'if',
+  'in', 'local', 'nil', 'not', 'or', 'repeat', 'return', 'then', 'true', 'until', 'while'
+]);
+
+const formatLuaKey = (string, singleQuote) => {
+  // 1. 先检查是否为 JS 特殊值 (null, true, false)
+  if (valueKeys[string] !== undefined) {
+    return `[${valueKeys[string]}]`;
+  }
+  // 2. 再检查是否为 Lua 保留关键字，如果是，则必须用 ["key"] 格式
+  if (luaKeywords.has(string)) {
+    return `[${formatLuaString(string, singleQuote)}]`;
+  }
+  // 3. 最后，检查是否为合法标识符
+  if (string.match(/^[a-zA-Z_][a-zA-Z_0-9]*$/)) {
+    return string;
+  }
+  // 4. 其他所有情况（包含特殊字符、空格等）都用 ["key"] 格式
+  return `[${formatLuaString(string, singleQuote)}]`;
+};
 
 const format = (value, options = { eol: '\n', singleQuote: true, spaces: 2 }) => {
   options = options || {}
@@ -44,35 +65,31 @@ const format = (value, options = { eol: '\n', singleQuote: true, spaces: 2 }) =>
       if (options.spaces) {
         const spaces = isNumber(options.spaces) ? repeat(' ', options.spaces * (i + 1)) : repeat(options.spaces, i + 1)
         const spacesEnd = isNumber(options.spaces) ? repeat(' ', options.spaces * i) : repeat(options.spaces, i)
-        return `{${eol}${keys(value)
-          .map(key => `${spaces}${formatLuaKey(key, options.singleQuote)} = ${rec(value[key], i + 1)},`)
-          .join(eol)}${eol}${spacesEnd}}`
+        return `{${eol}${keys(value).map(key => `${spaces}${formatLuaKey(key, options.singleQuote)} = ${rec(value[key], i + 1)},`).join(eol)}${eol}${spacesEnd}}`
       }
-      return `{${keys(value)
-        .map(key => `${formatLuaKey(key, options.singleQuote)}=${rec(value[key], i + 1)},`)
-        .join('')}}`
+      return `{${keys(value).map(key => `${formatLuaKey(key, options.singleQuote)}=${rec(value[key], i + 1)},`).join('')}}`
     }
     throw new Error(`can't format ${typeof value}`)
   }
-
   return `return${options.spaces ? ' ' : ''}${rec(value)}`
 }
 
-const luaAstToJson = ast => {
-  // literals
+const luaAstToJson = (ast) => {
   if (['NilLiteral', 'BooleanLiteral', 'NumericLiteral', 'StringLiteral'].includes(ast.type)) {
     return ast.value
   }
-  // basic expressions
   if (ast.type === 'UnaryExpression' && ast.operator === '-') {
     return -luaAstToJson(ast.argument)
   }
   if (ast.type === 'Identifier') {
     return ast.name
   }
-  // tables
   if (['TableKey', 'TableKeyString'].includes(ast.type)) {
-    return { __internal_table_key: true, key: luaAstToJson(ast.key), value: luaAstToJson(ast.value) }
+    return {
+      __internal_table_key: true,
+      key: luaAstToJson(ast.key),
+      value: luaAstToJson(ast.value),
+    }
   }
   if (ast.type === 'TableValue') {
     return luaAstToJson(ast.value)
@@ -80,20 +97,18 @@ const luaAstToJson = ast => {
   if (ast.type === 'TableConstructorExpression') {
     if (ast.fields[0] && ast.fields[0].key) {
       const object = fromPairs(
-        map(ast.fields, field => {
+        map(ast.fields, (field) => {
           const { key, value } = luaAstToJson(field)
           return [key, value]
         }),
       )
       return isEmpty(object) ? [] : object
     }
-    return map(ast.fields, field => {
+    return map(ast.fields, (field) => {
       const value = luaAstToJson(field)
       return value.__internal_table_key ? [value.key, value.value] : value
     })
   }
-  // top-level statements, only looking at the first statement, either return or local
-  // todo: filter until return or local?
   if (ast.type === 'LocalStatement') {
     const values = ast.init.map(luaAstToJson)
     return values.length === 1 ? values[0] : values
@@ -108,7 +123,7 @@ const luaAstToJson = ast => {
   throw new Error(`can't parse ${ast.type}`)
 }
 
-const parse = value => luaAstToJson(parseLua(value, { comments: false }))
+const parse = (value) => luaAstToJson(parseLua(value, { comments: false }))
 
 module.exports = {
   format,
