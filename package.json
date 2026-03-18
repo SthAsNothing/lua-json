@@ -10,11 +10,11 @@
     "parse"
   ],
   "license": "MIT",
-  "author": "gakada (https://github.com/gakada)",
+  "author": "gakada (https://github.com/gakada), SthAsNothing (https://github.com/SthAsNothing)",
   "contributors": [],
-  "homepage": "https://github.com/kcwiki/lua-json#readme",
-  "bugs": "https://github.com/kcwiki/lua-json/issues",
-  "repository": "kcwiki/lua-json",
+  "homepage": "https://github.com/SthAsNothing/lua-json#readme",
+  "bugs": "https://github.com/SthAsNothing/lua-json/issues",
+  "repository": "SthAsNothing/lua-json",
   "main": "index.js",
   "files": [
     "index.js"
