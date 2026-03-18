@@ -27,13 +27,13 @@ parse('return { x = 1 }') // { x: 1 }
 type Json = null | boolean | number | string | Json[] | { [_: string]: Json }
 
 format(
-  value: Json,
-  options?: {
-    eol: string = '\n',
-    singleQuote: boolean = true,
-    spaces: null | number | string = 2,
+  value: Json, // 输入：标准 JSON 数据（JS 数据）
+  options?: {   // 可选配置：格式化规则
+    eol: string = '\n',          // 换行符，默认 \n
+    singleQuote: boolean = true, // 字符串是否用单引号，默认 true
+    spaces: null | number | string = 2, // 缩进空格数，默认 2
   }
-): string
+): string // 输出：Lua 代码字符串
 
 parse(value: string): Json
 ```
