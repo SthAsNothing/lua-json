@@ -2,15 +2,20 @@
 
 [![Version](https://img.shields.io/npm/v/lua-json.svg)](https://www.npmjs.com/package/lua-json)
 
+## 描述（Describe）
+
+由js编写，将 Lua 表与 JSON 格式相互转换。
+
 Convert Lua tables to and from JSON.
 
-将 Lua 表与 JSON 格式相互转换。
+## 复制原因（Fork reason）
 
-## Install（安装）
+使用过程中发现，若Json中存在K为"nil"的键值对时，将 Json 格式转为 Lua 后，nil 未被"['"  "']" 包裹。
 
-```sh
-yarn add lua-json
-```
+即：format({"nil":0}) // => 'return { nil = 0}' => error.
+
+会造成报错。将在后续尝试修复。（拿nil当键的游戏公司也是人才）
+
 
 ## Usage
 
