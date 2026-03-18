@@ -3,6 +3,7 @@
 [![Version](https://img.shields.io/npm/v/lua-json.svg)](https://www.npmjs.com/package/lua-json)
 
 Convert Lua tables to and from JSON.
+
 将 Lua 表与 JSON 格式相互转换。
 
 ## Install
