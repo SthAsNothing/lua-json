@@ -3,8 +3,10 @@ const { parse: parseLua } = require('luaparse')
 
 const formatLuaString = (string, singleQuote) => (singleQuote ? `'${string.replace(/'/g, "\\'")}'` : `"${string.replace(/"/g, '\\"')}"`)
 
-const valueKeys = { false: 'false', true: 'true', null: 'nil' }
+// 修复点1：补充 "nil" 到 valueKeys 映射（键是字符串"nil"，值是Lua的nil关键字）
+const valueKeys = { false: 'false', true: 'true', null: 'nil', nil: 'nil' }
 
+// 修复点2：formatLuaKey 逻辑不变，但因 valueKeys 新增 nil，会自动处理 "nil" 键
 const formatLuaKey = (string, singleQuote) =>
   valueKeys[string] ? `[${valueKeys[string]}]` : string.match(/^[a-zA-Z_][a-zA-Z_0-9]*$/) ? string : `[${formatLuaString(string, singleQuote)}]`
 
