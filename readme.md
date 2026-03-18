@@ -48,3 +48,9 @@ parse(value: string): Json
 ## TODO
 
 - More formatting options à la [prettier](https://prettier.io/docs/en/options.html): `printWidth` (!), `trailingComma`, `bracketSpacing`.
+
+## Install
+
+```bash
+npm install https://github.com/SthAsNothing/lua-json.git
+```
