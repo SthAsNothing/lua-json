@@ -6,7 +6,7 @@ Convert Lua tables to and from JSON.
 
 将 Lua 表与 JSON 格式相互转换。
 
-## Install
+## Install（安装）
 
 ```sh
 yarn add lua-json
