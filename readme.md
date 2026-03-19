@@ -18,6 +18,28 @@ Convert Lua tables to and from Json.
 
 将在后续尝试修复。（吐槽下： 拿'nil'当键的游戏公司也是人才）
 
+### 2026/03/19
+
+现在：优化了Json中nil作为k时的转换。Json中存在“\n”时，Lua采用正确的格式以“[[string]]”包裹。
+  
+  1.format({ "nil":0 }) // 由原版 'return { nil = 0 }' => "return { ['nil'] = 0}"
+  2.format({ "nil":"Hello \n World" }) //由原版
+  
+```js
+return {
+  nil = 'Hello 
+ World',
+}
+```js
+
+=> 变为
+
+```js
+return {
+  nil = [[Hello 
+ World]],
+}
+```js
 
 ## Usage
 
