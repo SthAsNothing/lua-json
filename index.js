@@ -31,6 +31,7 @@ const formatLuaKey = (string, singleQuote) => {
   return `[${formatLuaString(string, singleQuote)}]`;
 };
 
+
 const format = (value, options = { eol: '\n', singleQuote: true, spaces: 2 }) => {
   options = options || {}
   const eol = (options.eol = isString(options.eol) ? options.eol : '\n')
@@ -45,12 +46,21 @@ const format = (value, options = { eol: '\n', singleQuote: true, spaces: 2 }) =>
       return value.toString()
     }
     if (isString(value)) {
-      return formatLuaString(value, options.singleQuote)
+      // --- 修改开始 ---
+      // 检查字符串是否包含换行符
+      if (value.includes('\n')) {
+        // 如果包含换行符，则使用 Lua 的多行字符串语法 [[ ]]
+        // 并移除首尾多余的换行符以保持整洁
+        let cleanValue = value.replace(/^\n+|\n+$/g, '');
+        return `[[${cleanValue}]]`;
+      } else {
+        // 否则，使用原来的格式化函数
+        return formatLuaString(value, options.singleQuote)
+      }
+      // --- 修改结束 ---
     }
     if (isArray(value)) {
-      if (isEmpty(value)) {
-        return '{}'
-      }
+      if (isEmpty(value)) { return '{}' }
       if (options.spaces) {
         const spaces = isNumber(options.spaces) ? repeat(' ', options.spaces * (i + 1)) : repeat(options.spaces, i + 1)
         const spacesEnd = isNumber(options.spaces) ? repeat(' ', options.spaces * i) : repeat(options.spaces, i)
@@ -59,9 +69,7 @@ const format = (value, options = { eol: '\n', singleQuote: true, spaces: 2 }) =>
       return `{${value.map(e => `${rec(e, i + 1)},`).join('')}}`
     }
     if (isObject(value)) {
-      if (isEmpty(value)) {
-        return '{}'
-      }
+      if (isEmpty(value)) { return '{}' }
       if (options.spaces) {
         const spaces = isNumber(options.spaces) ? repeat(' ', options.spaces * (i + 1)) : repeat(options.spaces, i + 1)
         const spacesEnd = isNumber(options.spaces) ? repeat(' ', options.spaces * i) : repeat(options.spaces, i)
