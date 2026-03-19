@@ -12,7 +12,7 @@ Convert Lua tables to and from Json.
 
 ### 2026/03/18
 
-使用原版过程中发现，若Json中存在K为"nil"的键值对时，将 Json 格式转为 Lua 后，nil 未被 "['"  "']" 包裹。
+使用原版过程中发现，若Json中存在Key为"nil"的键值对时，将 Json 格式转为 Lua 后，nil 未被 "['"  "']" 包裹。
 
 即：format({ "nil":0 }) // => 'return { nil = 0 }' 会造成报错。   即便真在Lua环境中，以字符串nil为键，正确格式也应当为"return { ['nil'] = 0}"
 
@@ -20,7 +20,7 @@ Convert Lua tables to and from Json.
 
 ### 2026/03/19
 
-现在：优化了Json中nil作为k时的转换。Json中存在“\n”时，Lua采用正确的格式以“[[string]]”包裹。
+现在：优化了Json中nil作为key时的转换。Json中存在“\n”时，Lua采用正确的格式以“[[string]]”包裹。
   
   1.format({ "nil":0 }) // 由原版 'return { nil = 0 }' => "return { ['nil'] = 0}"
   2.format({ "nil":"Hello \n World" }) //由原版
