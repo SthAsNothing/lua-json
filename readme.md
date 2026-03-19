@@ -30,7 +30,7 @@ return {
   nil = 'Hello 
  World',
 }
-```js
+```
 
 => 变为
 
@@ -39,7 +39,7 @@ return {
   nil = [[Hello 
  World]],
 }
-```js
+```
 
 ## Usage
 
