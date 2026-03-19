@@ -36,7 +36,7 @@ return {
 
 ```js
 return {
-  nil = [[Hello 
+  ['nil'] = [[Hello
  World]],
 }
 ```
