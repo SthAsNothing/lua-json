@@ -23,13 +23,14 @@ Convert Lua tables to and from Json.
 现在：优化了Json中nil作为key时的转换。Json中存在“\n”时，Lua采用正确的格式以“[[string]]”包裹。
   
   1.format({ "nil":0 }) // 由原版 'return { nil = 0 }' => "return { ['nil'] = 0}"
+  
   2.format({ "nil":"Hello \n World" }) //由原版
   
 ```js
 return {
   nil = 'Hello 
  World',
-}
+}  //字符串换行采用单引号会报错
 ```
 
 => 变为
