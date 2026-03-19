@@ -14,8 +14,6 @@ Convert Lua tables to and from Json.
 
 使用原版过程中发现，若Json中存在Key为"nil"的键值对时，将 Json 格式转为 Lua 后，nil 未被 "['"  "']" 包裹。
 
-即：format({ "nil":0 }) // => 'return { nil = 0 }' 会造成报错。   即便真在Lua环境中，以字符串nil为键，正确格式也应当为"return { ['nil'] = 0}"
-
 将在后续尝试修复。（吐槽下： 拿'nil'当键的游戏公司也是人才）
 
 ### 2026/03/19
