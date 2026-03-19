@@ -24,7 +24,9 @@ Convert Lua tables to and from Json.
   
   1.format({ "nil":0 }) // 由原版 'return { nil = 0 }' => "return { ['nil'] = 0}"
   
-  2.format({ "nil":"Hello \n World" }) //由原版
+  2.format({ "nil":"Hello \n World" })
+  
+=> 由原版
   
 ```js
 return {
