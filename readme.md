@@ -22,8 +22,9 @@ Convert Lua tables to and from Json.
 
 现在：优化了Json中nil作为key时的转换。Json中存在“\n”时，Lua采用正确的格式以“[[string]]”包裹。
   
-  1.```js
-  format({ "nil":0 }) 
+  1.
+  ```js
+  format({ "nil":0 });
   ```
 
 ```lua
@@ -38,8 +39,9 @@ return { ['nil'] = 0}
 
 ```
 
-  2.```js
-  format({ "nil":"Hello \n World" })
+  2.
+  ```js
+  format({ "nil":"Hello \n World" });
   ```
   
 ```lua
