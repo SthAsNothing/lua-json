@@ -61,15 +61,6 @@ return {
 }
 ```
 
-## Usage
-
-```js
-const { format, parse } = require('lua-json')
-
-format({ x: 1 }) // 'return { x = 1 }'
-parse('return { x = 1 }') // { x: 1 }
-```
-
 ## API
 
 ```ts
